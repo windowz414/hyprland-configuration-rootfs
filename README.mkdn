@@ -62,7 +62,15 @@ for i in $(find -type d); do sudo mkdir -p /${i}; done
 for i in $(find -type f); do sudo cp $(i) /$(i); done
 echo -e "sh hyprland.sh \&\& echo \"goodbye, now logging out\" \&\& exit 0 \\\n \|\| echo \"\$? hyperland.sh failed\" \&\& tty \|grep tty1 \\\n  \&\& echo \"refusing autologin without hyprland on tty1\" \&\& exit 0 \\\n  \|\| echo \"not on tty1, letting in\"" >> ~/.profile
 echo "source ~/.profile" >> ~/.bashrc
-echo "exec-once = /usr/bin/swaylock" >> ~/.config/hypr/hyprland.conf
+echo "exec-once=swayidle -w timeout 0 'swaylock-effects -s slide' timeout 150 'swaylock-effects -s dim' timeout 240 'swaylock-effects -s lock' timeout 300 'hyprctl dispatch hybrid-sleep' before-sleep 'swaylock-effects -s lock'" >> ~/.config/hypr/hyprland.conf
+echo "input type:lid events=close exec "swaylock-effects -s lock && hyprctl dispatch hybrid-sleep"" >> ~/.config/hypr/hyprland.conf
+echo "input type:lid events=open exec "swaymsg 'output * dpms on' && swaylock-effects -s slide"" >> ~/.config/hypr/hyprland.conf
+echo "mode "no-lock" {
+    bindsym $mod+Shift+q kill
+    bindsym $mod+Shift+f fullscreen toggle; mode "default"
+    bindsym $mod+Shift+l mode "default"
+}" >> ~/.config/hypr/hyprland.conf
+echo "bindsym $mod+Shift+l mode "no-lock"" >> ~/.config/hypr/hyprland.conf
 ```
 
 Then reboot and watch the magic happen!
